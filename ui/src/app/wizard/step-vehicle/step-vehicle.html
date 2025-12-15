@@ -1,0 +1,27 @@
+<div class="wrap">
+
+  <div class="grid">
+    <button
+      type="button"
+      class="tile"
+      *ngFor="let t of tiles"
+      [ngClass]="{ selected: selected === t.type }"
+      (click)="choose(t.type)"
+    >
+      <div class="tileTop">
+        <div class="tileTitle">{{ t.title }}</div>
+        <div class="tileSub">{{ t.subtitle }}</div>
+      </div>
+
+      <span class="msIcon material-symbols-outlined" aria-hidden="true">{{ t.icon }}</span>
+
+    </button>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="next" [disabled]="!canNext()" (click)="onNext()">
+      <span *ngIf="busy" class="spinner"></span>
+      Next
+    </button>
+  </div>
+</div>

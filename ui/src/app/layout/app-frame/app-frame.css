@@ -1,0 +1,37 @@
+.app {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  border-right: 1px solid var(--border);
+  background: rgba(255,255,255,.55);
+}
+
+
+.main {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 0;
+}
+
+.header {
+  border-bottom: 1px solid #e5e5e5;
+  padding: 18px 24px;
+  background: #fff;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.content {
+  padding: 48px 24px 36px;
+  overflow: auto;
+  min-height: 0;
+}
+
+

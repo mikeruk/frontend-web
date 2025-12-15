@@ -1,0 +1,41 @@
+<div class="wrap">
+  <div class="headline">Angebot:</div>
+
+  <div *ngIf="loading()" class="loadingCenter">
+    <div class="spinnerBig"></div>
+    <div class="loadingText">Calculating...</div>
+  </div>
+
+
+  <div *ngIf="!loading() && errorMessage()" class="errBox">
+    <div class="errTitle">Error</div>
+    <div class="errMsg">{{ errorMessage() }}</div>
+
+    <div class="actions">
+      <button type="button" class="secondary" (click)="onBack()">Back to Step 2</button>
+      <button type="button" class="primary" (click)="load()">Try again</button>
+    </div>
+  </div>
+
+  <div *ngIf="!loading() && offer()" class="result">
+    <div class="priceBig">
+      <div class="priceLabel">Preis:</div>
+      <div class="priceValue">{{ offer()!.price | number:'1.2-2' }} <span class="eur">EUR</span></div>
+    </div>
+
+    <div class="timerBox" [class.expired]="expired()">
+      <div class="timerTop">
+        <span class="dot"></span>
+        <span class="timerLabel">Angebot läuft ab in:</span>
+      </div>
+
+      <div class="timerValue">{{ remainingText() }}</div>
+      <div class="timerHint" *ngIf="expired()">Expired</div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="secondary" (click)="onBack()">Back</button>
+      <button type="button" class="primary" (click)="onReset()">neues Angebot</button>
+    </div>
+  </div>
+</div>

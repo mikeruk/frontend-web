@@ -1,0 +1,115 @@
+= frontend-web - UI + API Gateway
+:toc: left
+:toclevels: 2
+:sectnums:
+:icons: font
+:source-highlighter: rouge
+
+== Überblick
+
+`frontend-web` ist der Web-Entry-Point der Demo-Anwendung zur Berechnung von Versicherungstarifen.
+Es kombiniert:
+
+* *Spring Boot* als Host für die UI und als API-Proxy/Gateway
+* *Angular* als Single-Page-App (Wizard mit 3 Schritten)
+* *Thymeleaf* zum Ausliefern des Angular *Production Builds*
+
+== Architektur
+
+.Datenfluss (vereinfacht)
+----
+Browser (Angular) via POST to /api/offers to frontend-web (Spring Boot)
+frontend-web (Spring Boot) via POST to /api/v1/offers/create to offer-service
+offer-service via POST /api/v1/price/calculate to calculator-service
+----
+
+== UI (Angular Wizard)
+
+Die Angular UI ist ein Wizard mit drei Schritten:
+
+* *Step 1:* Auswahl `vehicleType` (Kacheln mit Icons)
+* *Step 2:* Eingabe
+  - `kilometers` (Validierung: required, min 1, max 999999999)
+  - `postcode` (required)
+* *Step 3:* Backend-Aufruf und Anzeige
+  - große Preis-Karte (2 Nachkommastellen)
+  - Countdown bis `expirationDate` (laufender Timer)
+  - Fehlerausgabe bei invaliden Daten (z.B. ungültige Postleitzahl)
+
+== API
+
+=== Endpoint
+
+* `POST /api/offers`
+
+.Request Body (Beispiel)
+[source,json]
+----
+{
+  "kilometers": 12000,
+  "vehicleType": "PKW",
+  "postcode": "51069"
+}
+----
+
+.Response (Erfolg)
+* `200 OK` mit Offer/Price-Daten (inkl. Faktoren, Status, Expiration)
+
+.Response (Fehler)
+* Status + JSON werden *durchgereicht* (z.B. `400` mit `message` aus Downstream-Service)
+
+== Spring Boot Komponenten (Kurz)
+
+* *MVC Controller* liefert die UI-Seite:
+     - `AppPageController` (`@Controller`)
+     - `GET /` und `GET /app` -->> `index` (templates/index.html)
+* *REST Controller* stellt das API bereit:
+   - `OfferControllerImpl` (`@RestController`, `/api`)
+   - `POST /offers` -->> ruft `OffersClient.createOffer(...)` auf* *Downstream Client*:
+  - Spring 6 HTTP Interface (`@HttpExchange`, `@PostExchange`) + `WebClient`
+* *Error Forwarding*:
+  - `GlobalErrorHandler` (`@RestControllerAdvice`) fängt `WebClientResponseException` ab und gibt **Status + JSON Body** exakt weiter
+       -->> Angular kann `err.error.message` sauber anzeigen
+
+== Production Build: Angular über Spring ausliefern
+
+Ziel: `ng build` schreibt direkt nach `frontend-web/src/main/resources/static`.
+
+=== Angular Konfiguration
+
+In `angular.json` (Angular-Projekt) den Output setzen:
+
+[source,json]
+----
+"outputPath": "../frontend-web/src/main/resources/static",
+"outputHashing": "none"
+----
+
+Dann Build ausführen:
+
+[source,bash]
+----
+ng build --configuration production
+----
+
+Danach liegen u.a. `main.js` und `styles.css` unter `src/main/resources/static/`.
+
+=== Thymeleaf Template
+
+`templates/index.html` lädt die Assets (Beispiel):
+
+[source,html]
+----
+<link rel="stylesheet" th:href="@{/styles.css}">
+<script type="module" th:src="@{/main.js}"></script>
+----
+
+== Troubleshooting (Kurz)
+
+*Nur „Loading…“ im Browser*
+ Prüfen, ob die Assets erreichbar sind:
+
+* `GET /main.js` darf nicht 404 sein
+* `GET /styles.css` darf nicht 404 sein
+
+Wenn 404: Angular Production Build erneut ausführen und `outputPath` prüfen.

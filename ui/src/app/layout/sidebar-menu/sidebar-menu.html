@@ -1,0 +1,26 @@
+<div class="wrap">
+  <div class="heading">
+    Technische<br />Dokumentation
+  </div>
+
+  <div class="menu">
+    <div class="item" *ngFor="let it of items; let i = index">
+      <button type="button" class="itemBtn" (click)="toggle(i)">
+        <span class="itemTitle">{{ it.title }}</span>
+        <span class="chev">{{ isOpen(i) ? '−' : '+' }}</span>
+      </button>
+
+      <div class="links" [class.open]="isOpen(i)">
+        <a
+          *ngFor="let l of it.links"
+          class="link"
+          [href]="l.url"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ l.label }}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

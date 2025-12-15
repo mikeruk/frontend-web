@@ -1,0 +1,13 @@
+<div class="stepper">
+  <button
+    type="button"
+    class="step"
+    *ngFor="let s of steps"
+    [disabled]="!s.clickable"
+    [ngClass]="s.state"
+    (click)="onClick(s)"
+  >
+    <span class="circle">{{ s.index }}</span>
+    <span class="text">{{ s.label }}</span>
+  </button>
+</div>

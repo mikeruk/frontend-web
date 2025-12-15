@@ -1,0 +1,35 @@
+<div class="wrap">
+
+  <form class="form" [formGroup]="form">
+    <label class="label">
+      Kilometers per year
+      <input class="input" type="number" formControlName="kilometers" placeholder="e.g. 12000" min="1" max="999999999" />
+      <div class="err" *ngIf="form.controls.kilometers.touched && form.controls.kilometers.invalid">
+        <span *ngIf="form.controls.kilometers.errors?.['required']">Kilometers is required.</span>
+        <span *ngIf="form.controls.kilometers.errors?.['min']">Must be greater than 0.</span>
+        <span *ngIf="form.controls.kilometers.errors?.['max']">Must be ≤ 999999999.</span>
+      </div>
+    </label>
+
+    <label class="label">
+      Postcode
+      <input class="input" type="text" formControlName="postcode" placeholder="e.g. 10115" />
+      <div class="err" *ngIf="form.controls.postcode.touched && form.controls.postcode.invalid">
+        Postcode is required.
+      </div>
+    </label>
+  </form>
+
+  <div class="actions">
+    <div class="actions">
+      <button type="button" class="secondary" [disabled]="busy" (click)="onBack()">Back</button>
+
+      <button type="button" class="primary" [disabled]="busy" (click)="onNext()">
+        <span *ngIf="busy" class="spinner"></span>
+        Next
+      </button>
+    </div>
+
+
+  </div>
+</div>

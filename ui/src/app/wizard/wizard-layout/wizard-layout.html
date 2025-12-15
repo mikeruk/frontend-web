@@ -1,0 +1,64 @@
+<div class="card">
+  <div class="tabs">
+    <button
+      type="button"
+      class="tab"
+      [class.active]="activeTab === 1"
+      (click)="selectTab(1)"
+    >
+      Calculator
+    </button>
+
+    <!-- Tab 2 hidden ... for now -->
+    <button
+      *ngIf="tab2Enabled"
+      type="button"
+      class="tab"
+      [class.active]="activeTab === 2"
+      (click)="selectTab(2)"
+    >
+      Tab 2
+    </button>
+  </div>
+
+  <div class="body">
+
+    <div *ngIf="activeTab === 1">
+      <app-stepper [steps]="steps"></app-stepper>
+
+      <div style="margin-top: 14px;">
+        <app-step-vehicle
+          *ngIf="currentStep === 1"
+          [(selected)]="vehicleType"
+          (next)="onVehicleNext()"
+          [busy]="transitioning()"
+        ></app-step-vehicle>
+
+        <app-step-details
+          *ngIf="currentStep === 2"
+          [initial]="step2"
+          (back)="onStep2Back($event)"
+          (next)="onStep2Next($event)"
+          [busy]="transitioning()"
+        ></app-step-details>
+      </div>
+    </div>
+
+    <div *ngIf="currentStep === 3" class="placeholder">
+      <app-step-result
+        *ngIf="currentStep === 3"
+        [vehicleType]="vehicleType!"
+        [kilometers]="step2.kilometers!"
+        [postcode]="step2.postcode"
+        (success)="onStep3Success()"
+        (reset)="onResetAll()"
+        (backToStep2)="backToStep2()"
+      ></app-step-result>
+    </div>
+
+
+    <div *ngIf="activeTab === 2" class="placeholder">
+      Tab 2 placeholder (future)
+    </div>
+  </div>
+</div>
